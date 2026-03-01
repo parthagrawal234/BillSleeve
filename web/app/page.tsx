@@ -1,6 +1,7 @@
-import Hero from "@/components/ui/hero";
+import { AetherHero } from "@/components/ui/aether-hero";
 import { Receipt, Shield, Bot, Globe, Lock, Zap } from "lucide-react";
 
+// ... features array remains the same ...
 const features = [
   {
     icon: <Receipt className="w-6 h-6" />,
@@ -44,7 +45,16 @@ export default function HomePage() {
   return (
     <main>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <Hero />
+      <AetherHero
+        title="Your bills. Secured. Automated."
+        subtitle="BillSleeve reads your receipts, tracks your warranties, and auto-registers them — all offline, all private."
+        ctaLabel="Open Dashboard"
+        ctaHref="/login"
+        secondaryCtaLabel="GitHub"
+        secondaryCtaHref="https://github.com/parthagrawal23/BillSleeve"
+        align="center"
+        overlayGradient="linear-gradient(180deg, #000000dd 0%, #00000066 30%, transparent)"
+      />
 
       {/* ── Features grid ────────────────────────────────────────────── */}
       <section id="features" className="bg-zinc-950 py-24 px-6">

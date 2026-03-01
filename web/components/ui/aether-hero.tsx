@@ -3,24 +3,31 @@
 import React, { useEffect, useRef } from 'react';
 
 export type AetherHeroProps = {
+    /* ---------- Hero content ---------- */
     title?: string;
     subtitle?: string;
     ctaLabel?: string;
     ctaHref?: string;
     secondaryCtaLabel?: string;
     secondaryCtaHref?: string;
-    align?: 'left' | 'center' | 'right';
-    maxWidth?: number;
-    overlayGradient?: string;
-    textColor?: string;
-    fragmentSource?: string;
-    dprMax?: number;
+
+    align?: 'left' | 'center' | 'right'; // Content alignment
+    maxWidth?: number; // px for text container (default 960)
+    overlayGradient?: string; // e.g. 'linear-gradient(180deg, #00000080, #00000020 40%, transparent)'
+    textColor?: string; // overlay text color (defaults to white)
+
+    /* ---------- Canvas/shader ---------- */
+    fragmentSource?: string; // override the shader
+    dprMax?: number; // cap DPR (default 2)
     clearColor?: [number, number, number, number];
-    height?: string | number;
+
+    /* ---------- Misc ---------- */
+    height?: string | number; // default '100vh'
     className?: string;
     ariaLabel?: string;
 };
 
+/* Default fragment shader (your original) */
 const DEFAULT_FRAG = `#version 300 es
 precision highp float;
 out vec4 O;
@@ -58,6 +65,7 @@ void main() {
   O=vec4(col,1.);
 }`;
 
+/* Minimal passthrough vertex shader */
 const VERT_SRC = `#version 300 es
 precision highp float;
 in vec2 position;
@@ -65,19 +73,25 @@ void main(){ gl_Position = vec4(position, 0.0, 1.0); }
 `;
 
 export default function AetherHero({
-    title = 'Your bills. Secured. Automated.',
-    subtitle = 'BillSleeve reads your receipts, tracks your warranties, and registers them automatically — all offline, all private.',
+    /* Content */
+    title = 'Make the impossible feel inevitable.',
+    subtitle = 'A minimal hero with a living shader background. Built for product landings, announcements, and portfolio intros.',
     ctaLabel = 'Get Started',
-    ctaHref = '#dashboard',
+    ctaHref = '#',
     secondaryCtaLabel,
     secondaryCtaHref,
+
     align = 'center',
     maxWidth = 960,
     overlayGradient = 'linear-gradient(180deg, #00000099, #00000040 40%, transparent)',
     textColor = '#ffffff',
+
+    /* Shader */
     fragmentSource = DEFAULT_FRAG,
     dprMax = 2,
     clearColor = [0, 0, 0, 1],
+
+    /* Misc */
     height = '100vh',
     className = '',
     ariaLabel = 'Aurora hero background',
@@ -90,6 +104,7 @@ export default function AetherHero({
     const uniResRef = useRef<WebGLUniformLocation | null>(null);
     const rafRef = useRef<number | null>(null);
 
+    // Compile helpers
     const compileShader = (gl: WebGL2RenderingContext, src: string, type: number) => {
         const sh = gl.createShader(type)!;
         gl.shaderSource(sh, src);
@@ -101,7 +116,6 @@ export default function AetherHero({
         }
         return sh;
     };
-
     const createProgram = (gl: WebGL2RenderingContext, vs: string, fs: string) => {
         const v = compileShader(gl, vs, gl.VERTEX_SHADER);
         const f = compileShader(gl, fs, gl.FRAGMENT_SHADER);
@@ -119,12 +133,14 @@ export default function AetherHero({
         return prog;
     };
 
+    // Init GL
     useEffect(() => {
         const canvas = canvasRef.current!;
         const gl = canvas.getContext('webgl2', { alpha: true, antialias: true });
         if (!gl) return;
         glRef.current = gl;
 
+        // Program
         let prog: WebGLProgram;
         try {
             prog = createProgram(gl, VERT_SRC, fragmentSource);
@@ -134,12 +150,14 @@ export default function AetherHero({
         }
         programRef.current = prog;
 
+        // Buffer
         const verts = new Float32Array([-1, 1, -1, -1, 1, 1, 1, -1]);
         const buf = gl.createBuffer()!;
         bufRef.current = buf;
         gl.bindBuffer(gl.ARRAY_BUFFER, buf);
         gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
 
+        // Attributes/uniforms
         gl.useProgram(prog);
         const posLoc = gl.getAttribLocation(prog, 'position');
         gl.enableVertexAttribArray(posLoc);
@@ -147,24 +165,30 @@ export default function AetherHero({
 
         uniTimeRef.current = gl.getUniformLocation(prog, 'time');
         uniResRef.current = gl.getUniformLocation(prog, 'resolution');
+
+        // Clear color
         gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 
+        // Size & DPR
         const fit = () => {
             const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, dprMax));
             const rect = canvas.getBoundingClientRect();
-            const W = Math.floor(Math.max(1, rect.width) * dpr);
-            const H = Math.floor(Math.max(1, rect.height) * dpr);
+            const cssW = Math.max(1, rect.width);
+            const cssH = Math.max(1, rect.height);
+            const W = Math.floor(cssW * dpr);
+            const H = Math.floor(cssH * dpr);
             if (canvas.width !== W || canvas.height !== H) {
-                canvas.width = W;
-                canvas.height = H;
+                canvas.width = W; canvas.height = H;
             }
             gl.viewport(0, 0, canvas.width, canvas.height);
         };
         fit();
+        const onResize = () => fit();
         const ro = new ResizeObserver(fit);
         ro.observe(canvas);
-        window.addEventListener('resize', fit);
+        window.addEventListener('resize', onResize);
 
+        // RAF
         const loop = (now: number) => {
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.useProgram(prog);
@@ -176,17 +200,20 @@ export default function AetherHero({
         };
         rafRef.current = requestAnimationFrame(loop);
 
+        // Cleanup
         return () => {
             ro.disconnect();
-            window.removeEventListener('resize', fit);
+            window.removeEventListener('resize', onResize);
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             if (bufRef.current) gl.deleteBuffer(bufRef.current);
             if (programRef.current) gl.deleteProgram(programRef.current);
         };
     }, [fragmentSource, dprMax, clearColor]);
 
-    const justify = align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center';
-    const textAlign = align === 'left' ? 'left' : align === 'right' ? 'right' : 'center';
+    const justify =
+        align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center';
+    const textAlign =
+        align === 'left' ? 'left' : align === 'right' ? 'right' : 'center';
 
     return (
         <section
@@ -194,12 +221,15 @@ export default function AetherHero({
             style={{ height, position: 'relative', overflow: 'hidden' }}
             aria-label="Hero"
         >
-            <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+            {/* Font import (Space Grotesk) */}
+            <style jsx global>{`
+                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
       `}</style>
 
+            {/* Shader canvas (background) */}
             <canvas
                 ref={canvasRef}
+                className="aurora-canvas"
                 role="img"
                 aria-label={ariaLabel}
                 style={{
@@ -213,7 +243,9 @@ export default function AetherHero({
                 }}
             />
 
+            {/* Overlay gradient for readability */}
             <div
+                className="aurora-overlay"
                 aria-hidden="true"
                 style={{
                     position: 'absolute',
@@ -223,7 +255,9 @@ export default function AetherHero({
                 }}
             />
 
+            {/* Content layer */}
             <div
+                className="aurora-content"
                 style={{
                     position: 'relative',
                     zIndex: 2,
@@ -257,7 +291,7 @@ export default function AetherHero({
                         {title}
                     </h1>
 
-                    {subtitle && (
+                    {subtitle ? (
                         <p
                             style={{
                                 marginTop: '1rem',
@@ -265,53 +299,63 @@ export default function AetherHero({
                                 lineHeight: 1.6,
                                 opacity: 0.9,
                                 textShadow: '0 4px 24px rgba(0,0,0,0.35)',
-                                maxWidth: 700,
+                                maxWidth: 900,
                                 marginInline: align === 'center' ? 'auto' : undefined,
                             }}
                         >
                             {subtitle}
                         </p>
-                    )}
+                    ) : null}
 
                     {(ctaLabel || secondaryCtaLabel) && (
-                        <div style={{ display: 'inline-flex', gap: '12px', marginTop: '2rem', flexWrap: 'wrap' }}>
-                            {ctaLabel && (
+                        <div
+                            style={{
+                                display: 'inline-flex',
+                                gap: '12px',
+                                marginTop: '2rem',
+                                flexWrap: 'wrap',
+                            }}
+                        >
+                            {ctaLabel ? (
                                 <a
                                     href={ctaHref}
+                                    className="aurora-btn aurora-btn--primary"
                                     style={{
-                                        padding: '12px 28px',
+                                        padding: '12px 18px',
                                         borderRadius: 12,
-                                        background: 'linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06))',
+                                        background:
+                                            'linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06))',
                                         color: textColor,
                                         textDecoration: 'none',
                                         fontWeight: 600,
-                                        fontSize: '1rem',
-                                        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.28), 0 10px 30px rgba(0,0,0,.2)',
+                                        boxShadow:
+                                            'inset 0 0 0 1px rgba(255,255,255,.28), 0 10px 30px rgba(0,0,0,.2)',
                                         backdropFilter: 'blur(6px) saturate(120%)',
                                     }}
                                 >
                                     {ctaLabel}
                                 </a>
-                            )}
-                            {secondaryCtaLabel && (
+                            ) : null}
+
+                            {secondaryCtaLabel ? (
                                 <a
                                     href={secondaryCtaHref}
+                                    className="aurora-btn aurora-btn--ghost"
                                     style={{
-                                        padding: '12px 28px',
+                                        padding: '12px 18px',
                                         borderRadius: 12,
                                         background: 'transparent',
                                         color: textColor,
                                         opacity: 0.85,
                                         textDecoration: 'none',
                                         fontWeight: 600,
-                                        fontSize: '1rem',
                                         boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.28)',
                                         backdropFilter: 'blur(2px)',
                                     }}
                                 >
                                     {secondaryCtaLabel}
                                 </a>
-                            )}
+                            ) : null}
                         </div>
                     )}
                 </div>
