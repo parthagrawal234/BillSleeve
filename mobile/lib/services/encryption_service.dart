@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:crypto/crypto.dart';
 
 class EncryptionService {
   // In a real app, this should be generated securely or tied to biometrics/keychain.

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import asyncpg
 from typing import Optional
 
-from db.connect import get_db, create_tables
+from db.connect import get_db
 from core.security import verify_password, get_password_hash, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])

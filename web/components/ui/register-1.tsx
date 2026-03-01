@@ -35,7 +35,7 @@ const AppInput = (props: InputProps) => {
             }
             <div className="relative w-full">
                 <input
-                    className="peer relative z-10 border-2 border-[var(--color-border)] h-13 w-full rounded-md bg-[var(--color-surface)] px-4 font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-[var(--color-bg)] placeholder:font-medium text-[var(--color-text-primary)]"
+                    className="peer relative z-10 border-2 border-(--color-) h-13 w-full rounded-md bg-(--color-) px-4 font-thin outline-none drop-shadow-sm transition-all duration-200 ease-in-out focus:bg-(--color-) placeholder:font-medium text-(--color-)"
                     placeholder={placeholder}
                     onMouseMove={handleMouseMove}
                     onMouseEnter={() => setIsHovering(true)}
@@ -59,7 +59,7 @@ const AppInput = (props: InputProps) => {
                     </>
                 )}
                 {icon && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 text-[var(--color-text-secondary)]">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 text-(--color-)">
                         {icon}
                     </div>
                 )}
@@ -105,19 +105,19 @@ const Page = () => {
     const stockImage = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop";
 
     return (
-        <div className="min-h-screen w-full bg-[var(--color-bg)] flex items-center justify-center p-4 text-[var(--color-text-primary)]">
-            <div className='card w-full max-w-5xl flex justify-between h-[600px] border border-[var(--color-border)] rounded-2xl overflow-hidden shadow-2xl relative'>
+        <div className="min-h-screen w-full bg-(--color-) flex items-center justify-center p-4 text-(--color-)">
+            <div className='card w-full max-w-5xl flex justify-between h-[600px] border border-(--color-) rounded-2xl overflow-hidden shadow-2xl relative'>
 
                 {/* Left Side: Gradient UI */}
                 <div
-                    className='w-full lg:w-1/2 px-4 lg:px-16 left h-full relative overflow-hidden bg-[var(--color-surface)] flex flex-col justify-center'
+                    className='w-full lg:w-1/2 px-4 lg:px-16 left h-full relative overflow-hidden bg-(--color-) flex flex-col justify-center'
                     onMouseMove={handleMouseMove}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 >
                     {/* Moving Gradient Orb (Slightly warmer colors for Register) */}
                     <div
-                        className={`absolute pointer-events-none w-[500px] h-[500px] bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 rounded-full blur-3xl transition-opacity duration-300 ${isHovering ? 'opacity-100' : 'opacity-0'
+                        className={`absolute pointer-events-none w-[500px] h-[500px] bg-linear-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 rounded-full blur-3xl transition-opacity duration-300 ${isHovering ? 'opacity-100' : 'opacity-0'
                             }`}
                         style={{
                             transform: `translate(${mousePosition.x - 250}px, ${mousePosition.y - 250}px)`,
@@ -126,10 +126,10 @@ const Page = () => {
                     />
 
                     <div className="form-container sign-in-container h-full z-10 flex flex-col justify-center w-full max-w-sm mx-auto">
-                        <h1 className='text-3xl md:text-4xl font-extrabold text-[var(--color-heading)] mb-2 group'>
+                        <h1 className='text-3xl md:text-4xl font-extrabold text-(--color-) mb-2 group'>
                             Create Setup
                         </h1>
-                        <p className="text-sm text-[var(--color-text-secondary)] mb-8">
+                        <p className="text-sm text-(--color-) mb-8">
                             Everything stays local on your hardware. No cloud.
                         </p>
 
@@ -158,20 +158,20 @@ const Page = () => {
                             )}
 
                             <div className='flex items-center justify-between mt-2'>
-                                <a href="/login" className='font-light text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors'>
+                                <a href="/login" className='font-light text-sm text-(--color-) hover:text-(--color-) transition-colors'>
                                     Back to login
                                 </a>
 
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md bg-[var(--color-border)] px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg hover:shadow-[var(--color-text-primary)]/20 cursor-pointer disabled:opacity-50"
+                                    className="group/button relative inline-flex justify-center items-center overflow-hidden rounded-md bg-(--color-) px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg hover:shadow-(--color-)/20 cursor-pointer disabled:opacity-50"
                                 >
                                     <span className="flex items-center gap-2 relative z-10 whitespace-nowrap">
                                         {isLoading ? "Setting up..." : "Create Vault"}
                                         {!isLoading && <Plus size={16} />}
                                     </span>
-                                    <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
+                                    <div className="absolute inset-0 flex h-full w-full justify-center transform-[skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:transform-[skew(-13deg)_translateX(100%)]">
                                         <div className="relative h-full w-8 bg-white/10" />
                                     </div>
                                 </button>
@@ -182,7 +182,7 @@ const Page = () => {
 
                 {/* Right Side Image Banner */}
                 <div className='hidden lg:block w-1/2 right h-full relative overflow-hidden bg-black'>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] to-transparent z-10 mix-blend-multiply opacity-50" />
+                    <div className="absolute inset-0 bg-linear-to-t from-(--color-) to-transparent z-10 mix-blend-multiply opacity-50" />
                     <Image
                         src={stockImage}
                         loader={({ src }) => src}
