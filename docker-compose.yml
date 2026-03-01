@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: billsleeve_db
+    environment:
+      POSTGRES_USER: billsleeve
+      POSTGRES_PASSWORD: billsleevesecure
+      POSTGRES_DB: billsleeve
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  vision:
+    build: ./vision
+    container_name: billsleeve_vision
+    ports:
+      - "5001:5001"
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: billsleeve_backend
+    environment:
+      # Use the container name 'db' to connect securely
+      - DATABASE_URL=postgresql://billsleeve:billsleevesecure@db:5432/billsleeve
+      - VISION_API_URL=http://vision:5001
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - vision
+    restart: always
+    # Map storage for screenshots/proofs so they persist across container restarts
+    volumes:
+      - ./backend/storage:/app/storage
+
+  web:
+    build: ./web
+    container_name: billsleeve_web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    restart: always
+
+volumes:
+  pgdata:
