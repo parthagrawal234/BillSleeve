@@ -145,8 +145,8 @@ export default function DashboardPage() {
                             { time: "3 hr ago", action: "Registered Bosch dishwasher warranty", tier: 2, ok: true },
                         ].map((log, i) => (
                             <div key={i} className="flex items-center gap-3 text-sm py-2 border-b border-zinc-800 last:border-0">
-                                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${log.ok ? "bg-emerald-400" : "bg-red-400"}`} />
-                                <span className="text-zinc-400 text-xs w-20 flex-shrink-0">{log.time}</span>
+                                <div className={`w-2 h-2 rounded-full shrink-0 ${log.ok ? "bg-emerald-400" : "bg-red-400"}`} />
+                                <span className="text-zinc-400 text-xs w-20 shrink-0">{log.time}</span>
                                 <span className={log.ok ? "text-zinc-200" : "text-red-400"}>{log.action}</span>
                                 <span className="ml-auto text-xs text-zinc-600">Tier {log.tier}</span>
                             </div>

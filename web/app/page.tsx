@@ -1,4 +1,4 @@
-import { AetherHero } from "@/components/ui/aether-hero";
+import Hero from "@/components/ui/hero";
 import { Receipt, Shield, Bot, Globe, Lock, Zap } from "lucide-react";
 
 const features = [
@@ -44,17 +44,7 @@ export default function HomePage() {
   return (
     <main>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <AetherHero
-        title="Your bills. Secured. Automated."
-        subtitle="BillSleeve reads your receipts, tracks warranties, and registers them automatically — all offline, all private, zero API costs."
-        ctaLabel="Open Dashboard"
-        ctaHref="/dashboard"
-        secondaryCtaLabel="Learn More"
-        secondaryCtaHref="#features"
-        align="center"
-        overlayGradient="linear-gradient(180deg, #000000bb 0%, #00000055 40%, transparent)"
-        height="100vh"
-      />
+      <Hero />
 
       {/* ── Features grid ────────────────────────────────────────────── */}
       <section id="features" className="bg-zinc-950 py-24 px-6">
