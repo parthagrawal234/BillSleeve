@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 from typing import Optional
-from passlib.context import CryptContext
+import bcrypt
 import jwt
 
 # Secret key for JWT. In production, this should be a strong random string securely injected via ENV.
@@ -9,15 +9,13 @@ SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "09d25e094faa6ca2556c818166b7a9563
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    safe_password = plain_password.encode('utf-8')[:72].decode('utf-8', 'ignore')
-    return pwd_context.verify(safe_password, hashed_password)
+    safe_password = plain_password.encode('utf-8')[:72]
+    return bcrypt.checkpw(safe_password, hashed_password.encode('utf-8'))
 
 def get_password_hash(password: str) -> str:
-    safe_password = password.encode('utf-8')[:72].decode('utf-8', 'ignore')
-    return pwd_context.hash(safe_password)
+    safe_password = password.encode('utf-8')[:72]
+    return bcrypt.hashpw(safe_password, bcrypt.gensalt()).decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
