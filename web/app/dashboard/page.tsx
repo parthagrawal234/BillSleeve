@@ -32,7 +32,7 @@ export default async function DashboardPage() {
 
     if (token) {
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://backend:8000";
 
             // Add token as Authorization Bearer to bypass Next.js -> FastAPI isolation
             const authHeader = { "Authorization": token };
