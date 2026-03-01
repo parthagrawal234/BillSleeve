@@ -1,17 +1,20 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-// Only the dashboard needs protection; the landing page is public.
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
+export function middleware(request: NextRequest) {
+    // If no user_id cookie is present, redirect to the login page
+    const userId = request.cookies.get('user_id')?.value
 
-export default clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) await auth.protect()
-})
+    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+        if (!userId) {
+            return NextResponse.redirect(new URL('/login', request.url))
+        }
+    }
+
+    return NextResponse.next()
+}
 
 export const config = {
-    matcher: [
-        // Skip Next.js internals and all static files, unless found in search params
-        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-        // Always run for API routes
-        '/(api|trpc)(.*)',
-    ],
+    matcher: ['/dashboard/:path*'],
 }

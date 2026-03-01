@@ -1,6 +1,6 @@
-import { Receipt, Shield, Clock, CheckCircle, AlertTriangle } from "lucide-react";
-import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+import { Receipt, Shield, Clock, CheckCircle, AlertTriangle, LogOut } from "lucide-react";
+import { cookies } from "next/headers";
+import { logoutLocalUser } from "../actions";
 
 const statusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -16,11 +16,11 @@ const statusBadge = (status: string) => {
 };
 
 export default async function DashboardPage() {
-    // 1. Get the securely verified Clerk user_id on the server side
-    const { userId } = await auth();
+    // 1. Get local user ID from cookies
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("user_id")?.value;
 
     // 2. Fetch the user's actual bills from FastAPI
-    // Use localhost if not in docker, but NEXT_PUBLIC_API_URL handles environment
     let recentBills: any[] = [];
     let stats = [
         { label: "Total Bills", value: "0", icon: <Receipt className="w-5 h-5" /> },
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
             const res = await fetch(`${apiUrl}/bills/`, {
                 headers: { "x-user-id": userId },
-                cache: "no-store", // don't cache dashboard
+                cache: "no-store",
             });
             if (res.ok) {
                 const data = await res.json();
@@ -43,7 +43,6 @@ export default async function DashboardPage() {
                 stats[0].value = recentBills.length.toString();
             }
 
-            // Also fetch warranties securely
             const wRes = await fetch(`${apiUrl}/warranties/`, {
                 headers: { "x-user-id": userId },
                 cache: "no-store",
@@ -69,16 +68,15 @@ export default async function DashboardPage() {
                     <a href="/" className="font-bold text-lg tracking-tight hover:text-zinc-300">BillSleeve</a>
                 </div>
                 <div className="flex items-center gap-6 text-sm">
-                    <SignedIn>
-                        <UserButton />
-                    </SignedIn>
-                    <SignedOut>
-                        <SignInButton mode="modal">
-                            <button className="bg-white hover:bg-zinc-200 text-black px-4 py-1.5 rounded-lg font-medium transition-colors">
-                                Sign In
-                            </button>
-                        </SignInButton>
-                    </SignedOut>
+                    <span className="text-zinc-400 hidden sm:block">
+                        Logged in as <span className="text-white font-medium">{userId}</span>
+                    </span>
+                    <form action={logoutLocalUser}>
+                        <button type="submit" className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 px-3 py-1.5 rounded-lg font-medium transition-colors">
+                            <LogOut className="w-4 h-4" />
+                            Sign out
+                        </button>
+                    </form>
                 </div>
             </nav>
 

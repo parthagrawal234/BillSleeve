@@ -10,21 +10,17 @@ export const metadata: Metadata = {
     "Offline, zero-API bill management with automatic warranty registration. Your receipts, secured and automated.",
 };
 
-import { ClerkProvider } from '@clerk/nextjs'
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${geist.className} bg-zinc-950 text-white antialiased`}>
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`${geist.className} bg-zinc-950 text-white antialiased`}>
+        {children}
+      </body>
+    </html>
   );
 }
 export const dynamic = 'force-dynamic';

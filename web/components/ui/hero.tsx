@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Marquee } from "@/components/ui/marquee";
@@ -116,31 +116,17 @@ export default function Hero() {
                             <span className="text-white">— that's the deal</span>
                         </h1>
 
-                        <SignedIn>
-                            <Button
-                                asChild
-                                className="rounded-none py-0 pr-0 font-normal text-black text-lg"
-                            >
-                                <a href="/dashboard">
-                                    Open Dashboard
-                                    <span className="border-neutral-500 border-l p-3 ml-2">
-                                        <ArrowRight className="w-5 h-5" />
-                                    </span>
-                                </a>
-                            </Button>
-                        </SignedIn>
-                        <SignedOut>
-                            <SignInButton mode="modal">
-                                <Button
-                                    className="rounded-none py-0 pr-0 font-normal text-black text-lg h-auto cursor-pointer"
-                                >
-                                    Sign In securely
-                                    <span className="border-neutral-500 border-l p-3 ml-2">
-                                        <ArrowRight className="w-5 h-5" />
-                                    </span>
-                                </Button>
-                            </SignInButton>
-                        </SignedOut>
+                        <Button
+                            asChild
+                            className="rounded-none py-0 pr-0 font-normal text-black text-lg"
+                        >
+                            <a href="/dashboard">
+                                Open Dashboard
+                                <span className="border-neutral-500 border-l p-3 ml-2">
+                                    <ArrowRight className="w-5 h-5" />
+                                </span>
+                            </a>
+                        </Button>
                     </div>
 
                     {/* Right: tagline */}
