@@ -86,9 +86,38 @@ async def _run_agent_in_background(job_id: str, warranty_id: str, user_email: st
         )
 
     try:
-        # TODO: from agents.universal_agent import run_agent
-        # result = await run_agent(warranty_id, user_email)
-        print(f"✅ Agent job {job_id} completed (placeholder)")
+        from agents.universal_agent import run_warranty_agent, WarrantyJob
+
+        # Fetch warranty details from the database
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT brand, product_name, serial_no, expires_at FROM warranties WHERE id = $1",
+                warranty_id,
+            )
+
+        if row:
+            job = WarrantyJob(
+                job_id=job_id,
+                brand=row["brand"] or "Unknown",
+                product_name=row["product_name"] or "",
+                serial_no=row["serial_no"] or "",
+                purchase_date=str(row["expires_at"]) if row["expires_at"] else "",
+                user_email=user_email,
+            )
+            result = await run_warranty_agent(job)
+
+            async with pool.acquire() as conn:
+                await conn.execute(
+                    """UPDATE agent_jobs
+                       SET status = $1, proof_path = $2, completed_at = $3
+                       WHERE id = $4""",
+                    "done" if result.success else "failed",
+                    result.proof_path,
+                    datetime.utcnow(),
+                    job_id,
+                )
+            print(f"{'✅' if result.success else '❌'} Agent job {job_id} finished (tier {result.tier_used})")
+
 
         async with pool.acquire() as conn:
             await conn.execute(

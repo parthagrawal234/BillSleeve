@@ -1,0 +1,23 @@
+{
+    "brand": "Sony",
+    "url": "https://esupport.sony.com/US/p/reg-step1.pl",
+    "tier_learned": 1,
+    "fields": [
+        {
+            "selector": "input[name*='serial'], input[id*='serial']",
+            "value_key": "serial_no"
+        },
+        {
+            "selector": "input[name*='email'], input[type='email']",
+            "value_key": "email"
+        },
+        {
+            "selector": "input[name*='first'], input[id*='first']",
+            "value_key": "name"
+        },
+        {
+            "selector": "input[name*='model'], input[id*='model']",
+            "value_key": "product_name"
+        }
+    ]
+}

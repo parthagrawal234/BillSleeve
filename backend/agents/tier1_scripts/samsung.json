@@ -1,0 +1,27 @@
+{
+    "brand": "Samsung",
+    "url": "https://www.samsung.com/us/support/warranty/",
+    "tier_learned": 1,
+    "fields": [
+        {
+            "selector": "input[id*='serial'], input[name*='serial']",
+            "value_key": "serial_no"
+        },
+        {
+            "selector": "input[type='email']",
+            "value_key": "email"
+        },
+        {
+            "selector": "input[id*='name'], input[name*='name']",
+            "value_key": "name"
+        },
+        {
+            "selector": "input[id*='model'], input[name*='model']",
+            "value_key": "product_name"
+        },
+        {
+            "selector": "input[type='date'], input[name*='date']",
+            "value_key": "purchase_date"
+        }
+    ]
+}

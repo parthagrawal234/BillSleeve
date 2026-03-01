@@ -1,0 +1,11 @@
+{
+    "brand": "Apple",
+    "url": "https://checkcoverage.apple.com/",
+    "tier_learned": 1,
+    "fields": [
+        {
+            "selector": "#serial-number, input[name*='serial']",
+            "value_key": "serial_no"
+        }
+    ]
+}
