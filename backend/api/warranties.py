@@ -8,6 +8,7 @@ to auto-register a warranty on a brand's website.
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 from services.warranty_service import get_warranties, dispatch_agent
+from db.connect import get_db
 
 router = APIRouter()
 
@@ -62,8 +63,24 @@ async def job_status(job_id: str):
     Checks the status of a browser agent job.
     Status can be: queued | running | done | failed
     """
-    # TODO: query agent_jobs table by job_id
+    pool = get_db()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            """SELECT id, warranty_id, status, proof_path,
+                      error_message, created_at, started_at, completed_at
+               FROM agent_jobs WHERE id = $1""",
+            job_id,
+        )
+
+    if not row:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+
     return {
-        "job_id": job_id,
-        "status": "queued",  # placeholder until agents module is built
+        "job_id":       row["id"],
+        "warranty_id":  row["warranty_id"],
+        "status":       row["status"],
+        "proof_path":   row["proof_path"],
+        "error":        row["error_message"],
+        "created_at":   str(row["created_at"]),
+        "completed_at": str(row["completed_at"]) if row["completed_at"] else None,
     }

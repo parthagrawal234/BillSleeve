@@ -15,11 +15,8 @@ If Tier 2 or 3 succeeds, the selectors are cached so next time it's Tier 1 speed
 Each agent runs inside its own Playwright browser context — fully isolated.
 """
 
-import asyncio
-import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from playwright.async_api import async_playwright, Page, BrowserContext
 

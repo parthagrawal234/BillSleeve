@@ -118,13 +118,6 @@ async def _run_agent_in_background(job_id: str, warranty_id: str, user_email: st
                 )
             print(f"{'✅' if result.success else '❌'} Agent job {job_id} finished (tier {result.tier_used})")
 
-
-        async with pool.acquire() as conn:
-            await conn.execute(
-                "UPDATE agent_jobs SET status = 'done', completed_at = $1 WHERE id = $2",
-                datetime.utcnow(), job_id,
-            )
-
     except Exception as e:
         async with pool.acquire() as conn:
             await conn.execute(
