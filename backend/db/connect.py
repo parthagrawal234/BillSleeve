@@ -25,15 +25,23 @@ async def connect_db():
 
     for attempt in range(max_retries):
         try:
-            _pool = await asyncpg.create_pool(
-                host=os.getenv("DB_HOST", "localhost"),
-                port=int(os.getenv("DB_PORT", "5432")),
-                user=os.getenv("DB_USER", "billsleeve"),
-                password=os.getenv("DB_PASSWORD", ""),
-                database=os.getenv("DB_NAME", "billsleeve"),
-                min_size=5,   # keep 5 connections warm (ready to use)
-                max_size=20,  # allow up to 20 simultaneous connections
-            )
+            db_url = os.getenv("DATABASE_URL")
+            if db_url:
+                _pool = await asyncpg.create_pool(
+                    db_url,
+                    min_size=5,
+                    max_size=20,
+                )
+            else:
+                _pool = await asyncpg.create_pool(
+                    host=os.getenv("DB_HOST", "localhost"),
+                    port=int(os.getenv("DB_PORT", "5432")),
+                    user=os.getenv("DB_USER", "billsleeve"),
+                    password=os.getenv("DB_PASSWORD", ""),
+                    database=os.getenv("DB_NAME", "billsleeve"),
+                    min_size=5,   # keep 5 connections warm (ready to use)
+                    max_size=20,  # allow up to 20 simultaneous connections
+                )
             print("✅ Connected to PostgreSQL")
             return
         except (ConnectionRefusedError, asyncpg.CannotConnectNowError) as e:
