@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Marquee } from "@/components/ui/marquee";
@@ -104,7 +105,8 @@ export default function Hero() {
             {/* Main copy */}
             <div className="relative z-10 w-full px-4 pb-16 sm:px-8 sm:pb-24 lg:px-16 lg:pb-32">
                 <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
-                    {/* Left: headline + CTA */}
+
+
                     <div className="w-full space-y-4 sm:w-1/2">
                         <h1 className="font-medium text-4xl text-white leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                             We{" "}
@@ -114,17 +116,31 @@ export default function Hero() {
                             <span className="text-white">— that's the deal</span>
                         </h1>
 
-                        <Button
-                            asChild
-                            className="rounded-none py-0 pr-0 font-normal text-black text-lg"
-                        >
-                            <a href="/dashboard">
-                                Open Dashboard
-                                <span className="border-neutral-500 border-l p-3 ml-2">
-                                    <ArrowRight className="w-5 h-5" />
-                                </span>
-                            </a>
-                        </Button>
+                        <SignedIn>
+                            <Button
+                                asChild
+                                className="rounded-none py-0 pr-0 font-normal text-black text-lg"
+                            >
+                                <a href="/dashboard">
+                                    Open Dashboard
+                                    <span className="border-neutral-500 border-l p-3 ml-2">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </span>
+                                </a>
+                            </Button>
+                        </SignedIn>
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <Button
+                                    className="rounded-none py-0 pr-0 font-normal text-black text-lg h-auto cursor-pointer"
+                                >
+                                    Sign In securely
+                                    <span className="border-neutral-500 border-l p-3 ml-2">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </span>
+                                </Button>
+                            </SignInButton>
+                        </SignedOut>
                     </div>
 
                     {/* Right: tagline */}

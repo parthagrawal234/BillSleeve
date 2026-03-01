@@ -1,28 +1,6 @@
 import { Receipt, Shield, Clock, CheckCircle, AlertTriangle } from "lucide-react";
-
-// Mock data — replace with real API calls to backend
-const stats = [
-    { label: "Total Bills", value: "24", icon: <Receipt className="w-5 h-5" /> },
-    { label: "Active Warranties", value: "18", icon: <Shield className="w-5 h-5" /> },
-    { label: "Expiring Soon", value: "3", icon: <AlertTriangle className="w-5 h-5 text-amber-400" /> },
-    { label: "Registered", value: "15", icon: <CheckCircle className="w-5 h-5 text-emerald-400" /> },
-];
-
-const recentBills = [
-    { id: "1", store: "Sony Electronics", amount: 28999, date: "2026-01-15", warranty: "2 yr", status: "registered" },
-    { id: "2", store: "Samsung Store", amount: 54999, date: "2026-01-22", warranty: "1 yr", status: "registered" },
-    { id: "3", store: "Apple Store", amount: 89999, date: "2026-02-01", warranty: "1 yr", status: "pending" },
-    { id: "4", store: "LG Electronics", amount: 34999, date: "2026-02-10", warranty: "2 yr", status: "failed" },
-    { id: "5", store: "Bosch Appliances", amount: 12999, date: "2026-02-20", warranty: "5 yr", status: "pending" },
-];
-
-const warranties = [
-    { product: "Sony WH-1000XM5", brand: "Sony", expires: "2028-01-15", daysLeft: 685, status: "registered" },
-    { product: "Samsung QLED TV 65\"", brand: "Samsung", expires: "2027-01-22", daysLeft: 327, status: "registered" },
-    { product: "iPhone 16 Pro", brand: "Apple", expires: "2027-02-01", daysLeft: 337, status: "pending" },
-    { product: "LG Washing Machine", brand: "LG", expires: "2028-02-10", daysLeft: 710, status: "failed" },
-    { product: "Bosch Dishwasher", brand: "Bosch", expires: "2031-02-20", daysLeft: 1817, status: "pending" },
-];
+import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 const statusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -37,26 +15,74 @@ const statusBadge = (status: string) => {
     );
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    // 1. Get the securely verified Clerk user_id on the server side
+    const { userId } = await auth();
+
+    // 2. Fetch the user's actual bills from FastAPI
+    // Use localhost if not in docker, but NEXT_PUBLIC_API_URL handles environment
+    let recentBills: any[] = [];
+    let stats = [
+        { label: "Total Bills", value: "0", icon: <Receipt className="w-5 h-5" /> },
+        { label: "Active Warranties", value: "0", icon: <Shield className="w-5 h-5" /> },
+        { label: "Expiring Soon", value: "0", icon: <AlertTriangle className="w-5 h-5 text-amber-400" /> },
+        { label: "Registered", value: "0", icon: <CheckCircle className="w-5 h-5 text-emerald-400" /> },
+    ];
+    let warranties: any[] = [];
+
+    if (userId) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+            const res = await fetch(`${apiUrl}/bills/`, {
+                headers: { "x-user-id": userId },
+                cache: "no-store", // don't cache dashboard
+            });
+            if (res.ok) {
+                const data = await res.json();
+                recentBills = data.bills || [];
+                stats[0].value = recentBills.length.toString();
+            }
+
+            // Also fetch warranties securely
+            const wRes = await fetch(`${apiUrl}/warranties/`, {
+                headers: { "x-user-id": userId },
+                cache: "no-store",
+            });
+            if (wRes.ok) {
+                const data = await wRes.json();
+                warranties = data.warranties || [];
+                stats[1].value = warranties.length.toString();
+                stats[3].value = warranties.filter((w: any) => w.registered).length.toString();
+            }
+
+        } catch (e) {
+            console.error("Failed to fetch dashboard data:", e);
+        }
+    }
+
     return (
         <div className="min-h-screen bg-zinc-950 text-white">
             {/* ── Navbar ────────────────────────────────────────────────── */}
             <nav className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Receipt className="w-6 h-6 text-indigo-400" />
-                    <span className="font-bold text-lg tracking-tight">BillSleeve</span>
+                    <a href="/" className="font-bold text-lg tracking-tight hover:text-zinc-300">BillSleeve</a>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-zinc-400">
-                    <a href="/" className="hover:text-white transition-colors">Home</a>
-                    <a href="/dashboard" className="text-white">Dashboard</a>
-                    <button className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 rounded-lg font-medium transition-colors">
-                        Upload Bill
-                    </button>
+                <div className="flex items-center gap-6 text-sm">
+                    <SignedIn>
+                        <UserButton />
+                    </SignedIn>
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button className="bg-white hover:bg-zinc-200 text-black px-4 py-1.5 rounded-lg font-medium transition-colors">
+                                Sign In
+                            </button>
+                        </SignInButton>
+                    </SignedOut>
                 </div>
             </nav>
 
             <div className="max-w-7xl mx-auto px-6 py-10">
-
                 {/* ── Page header ───────────────────────────────────────── */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -77,30 +103,37 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
                     {/* ── Recent Bills ────────────────────────────────────── */}
                     <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6">
                         <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
                             <Receipt className="w-5 h-5 text-indigo-400" />
                             Recent Bills
                         </h2>
-                        <div className="space-y-3">
-                            {recentBills.map((bill) => (
-                                <div
-                                    key={bill.id}
-                                    className="flex items-center justify-between py-2 border-b border-zinc-800 last:border-0"
-                                >
-                                    <div>
-                                        <p className="text-sm font-medium">{bill.store}</p>
-                                        <p className="text-xs text-zinc-500 mt-0.5">{bill.date} · {bill.warranty} warranty</p>
+                        {recentBills.length === 0 ? (
+                            <div className="py-8 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl">
+                                No bills uploaded yet.
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {recentBills.map((bill: any) => (
+                                    <div
+                                        key={bill.id}
+                                        className="flex items-center justify-between py-2 border-b border-zinc-800 last:border-0"
+                                    >
+                                        <div>
+                                            <p className="text-sm font-medium">{bill.store_name || "Unknown Store"}</p>
+                                            <p className="text-xs text-zinc-500 mt-0.5">{bill.purchase_date || "Unknown Date"}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-mono">
+                                                {bill.total_amount ? `₹${Number(bill.total_amount).toLocaleString()}` : '—'}
+                                            </span>
+                                            {statusBadge("registered")}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-sm font-mono">₹{bill.amount.toLocaleString()}</span>
-                                        {statusBadge(bill.status)}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* ── Warranties ──────────────────────────────────────── */}
@@ -109,25 +142,28 @@ export default function DashboardPage() {
                             <Shield className="w-5 h-5 text-emerald-400" />
                             Warranty Tracker
                         </h2>
-                        <div className="space-y-3">
-                            {warranties.map((w) => (
-                                <div
-                                    key={w.product}
-                                    className="flex items-center justify-between py-2 border-b border-zinc-800 last:border-0"
-                                >
-                                    <div>
-                                        <p className="text-sm font-medium">{w.product}</p>
-                                        <p className="text-xs text-zinc-500 mt-0.5">
-                                            Expires {w.expires} ·{" "}
-                                            <span className={w.daysLeft < 365 ? "text-amber-400" : "text-emerald-400"}>
-                                                {w.daysLeft} days left
-                                            </span>
-                                        </p>
+                        {warranties.length === 0 ? (
+                            <div className="py-8 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl">
+                                No warranties auto-registered yet.
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {warranties.map((w: any) => (
+                                    <div
+                                        key={w.id}
+                                        className="flex items-center justify-between py-2 border-b border-zinc-800 last:border-0"
+                                    >
+                                        <div>
+                                            <p className="text-sm font-medium">{w.product_name || "Unknown Product"}</p>
+                                            <p className="text-xs text-zinc-500 mt-0.5">
+                                                Expires {w.expires_at || "—"}
+                                            </p>
+                                        </div>
+                                        {statusBadge(w.registered ? "registered" : "pending")}
                                     </div>
-                                    {statusBadge(w.status)}
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -138,19 +174,9 @@ export default function DashboardPage() {
                         Browser Agent Activity
                     </h2>
                     <div className="space-y-2">
-                        {[
-                            { time: "2 min ago", action: "Registered Sony WH-1000XM5 warranty", tier: 1, ok: true },
-                            { time: "14 min ago", action: "Registered Samsung QLED TV warranty", tier: 1, ok: true },
-                            { time: "1 hr ago", action: "Failed to register LG Washing Machine warranty", tier: 3, ok: false },
-                            { time: "3 hr ago", action: "Registered Bosch dishwasher warranty", tier: 2, ok: true },
-                        ].map((log, i) => (
-                            <div key={i} className="flex items-center gap-3 text-sm py-2 border-b border-zinc-800 last:border-0">
-                                <div className={`w-2 h-2 rounded-full shrink-0 ${log.ok ? "bg-emerald-400" : "bg-red-400"}`} />
-                                <span className="text-zinc-400 text-xs w-20 shrink-0">{log.time}</span>
-                                <span className={log.ok ? "text-zinc-200" : "text-red-400"}>{log.action}</span>
-                                <span className="ml-auto text-xs text-zinc-600">Tier {log.tier}</span>
-                            </div>
-                        ))}
+                        <div className="py-2 text-zinc-500 text-sm">
+                            Real agent history logic goes here.
+                        </div>
                     </div>
                 </div>
             </div>

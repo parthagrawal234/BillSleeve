@@ -6,16 +6,16 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ── Users ─────────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          TEXT PRIMARY KEY,       -- Clerk user ID (e.g. user_2xxx)
     email       TEXT UNIQUE NOT NULL,
-    key_hash    TEXT NOT NULL,          -- hash of the user's key derivation (never the password)
+    key_hash    TEXT,                   -- optional: hash of the user's key derivation
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ── Bills ─────────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS bills (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     store_name      TEXT,              -- populated after OCR
     total_amount    NUMERIC(12, 2),    -- populated after OCR
     purchase_date   DATE,              -- populated after OCR
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS agent_jobs (
 -- ── Audit Logs (Immutable — never UPDATE or DELETE rows here) ─────────────────
 CREATE TABLE IF NOT EXISTS audit_logs (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id     UUID REFERENCES users(id),
+    user_id     TEXT REFERENCES users(id),
     action      TEXT NOT NULL,    -- e.g. "bill_uploaded", "warranty_registered"
     details     JSONB,            -- flexible field for extra context
     prev_hash   TEXT,             -- SHA-256 hash of the previous row
