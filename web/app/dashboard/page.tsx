@@ -16,9 +16,9 @@ const statusBadge = (status: string) => {
 };
 
 export default async function DashboardPage() {
-    // 1. Get local user ID from cookies
+    // 1. Get local JWT token from cookies
     const cookieStore = await cookies();
-    const userId = cookieStore.get("user_id")?.value;
+    const token = cookieStore.get("access_token")?.value;
 
     // 2. Fetch the user's actual bills from FastAPI
     let recentBills: any[] = [];
@@ -30,11 +30,15 @@ export default async function DashboardPage() {
     ];
     let warranties: any[] = [];
 
-    if (userId) {
+    if (token) {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-            const res = await fetch(`${apiUrl}/bills/`, {
-                headers: { "x-user-id": userId },
+
+            // Add token as Authorization Bearer to bypass Next.js -> FastAPI isolation
+            const authHeader = { "Authorization": token };
+
+            const res = await fetch(`${apiUrl}/api/bills/`, {
+                headers: authHeader,
                 cache: "no-store",
             });
             if (res.ok) {
@@ -43,8 +47,8 @@ export default async function DashboardPage() {
                 stats[0].value = recentBills.length.toString();
             }
 
-            const wRes = await fetch(`${apiUrl}/warranties/`, {
-                headers: { "x-user-id": userId },
+            const wRes = await fetch(`${apiUrl}/api/warranties/`, {
+                headers: authHeader,
                 cache: "no-store",
             });
             if (wRes.ok) {
@@ -68,9 +72,6 @@ export default async function DashboardPage() {
                     <a href="/" className="font-bold text-lg tracking-tight hover:text-zinc-300">BillSleeve</a>
                 </div>
                 <div className="flex items-center gap-6 text-sm">
-                    <span className="text-zinc-400 hidden sm:block">
-                        Logged in as <span className="text-white font-medium">{userId}</span>
-                    </span>
                     <form action={logoutLocalUser}>
                         <button type="submit" className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 px-3 py-1.5 rounded-lg font-medium transition-colors">
                             <LogOut className="w-4 h-4" />

@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.connect import connect_db, disconnect_db
 from api.routes import router
+from api import auth
 
 
 # ── Lifespan (runs on startup & shutdown) ────────────────────────────────────
@@ -40,13 +41,14 @@ app = FastAPI(
 # Allow requests from the Next.js dashboard and Flutter web app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js default port
+    allow_origins=["*"],  # Allow mobile and Next.js
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Register all routes (API endpoints)
+app.include_router(auth.router, prefix="/api")
 app.include_router(router, prefix="/api")
 
 

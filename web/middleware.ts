@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-    // If no user_id cookie is present, redirect to the login page
-    const userId = request.cookies.get('user_id')?.value
+    // If no access_token cookie is present, redirect to the login page
+    const token = request.cookies.get('access_token')?.value
 
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
-        if (!userId) {
+        if (!token) {
             return NextResponse.redirect(new URL('/login', request.url))
         }
     }

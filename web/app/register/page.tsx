@@ -1,10 +1,10 @@
 'use client'
 
 import { Receipt, AlertCircle } from "lucide-react";
-import { loginLocalUser } from "../actions";
+import { registerLocalUser } from "../actions";
 import { useState } from "react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -12,26 +12,26 @@ export default function LoginPage() {
         setIsLoading(true);
         setError("");
         try {
-            await loginLocalUser(formData);
+            await registerLocalUser(formData);
             // On success, redirect happens in the server action
         } catch (e: any) {
-            setError(e.message || "Invalid username or password.");
+            setError(e.message || "Failed to register account.");
             setIsLoading(false);
         }
     }
 
     return (
         <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-sm border border-zinc-800 bg-zinc-900/50 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="flex justify-center mb-6">
+            <div className="w-full max-w-sm border border-zinc-800 bg-zinc-900/50 rounded-2xl p-8 backdrop-blur-sm relative overflow-hidden">
+                <div className="flex justify-center mb-6 relative">
                     <div className="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center">
                         <Receipt className="w-6 h-6 text-indigo-400" />
                     </div>
                 </div>
 
-                <h1 className="text-2xl font-bold text-white text-center mb-2">Sign In</h1>
+                <h1 className="text-2xl font-bold text-white text-center mb-2">Create Account</h1>
                 <p className="text-zinc-400 text-sm text-center mb-8">
-                    Access your offline bills and warranties.
+                    Fully offline. Your data never leaves your network.
                 </p>
 
                 {error && (
@@ -71,15 +71,15 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? "Unlocking vault..." : "Enter Dashboard"}
+                        {isLoading ? "Creating vault..." : "Create Account"}
                     </button>
 
                     <p className="text-center text-sm text-zinc-500 mt-6">
-                        Don't have an account?{' '}
-                        <a href="/register" className="text-indigo-400 hover:text-indigo-300 transition-colors">
-                            Sign up
+                        Already have a vault?{' '}
+                        <a href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                            Sign in
                         </a>
                     </p>
                 </form>

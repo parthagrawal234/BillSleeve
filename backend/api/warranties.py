@@ -5,10 +5,11 @@ Endpoints for viewing warranties and triggering the browser agent
 to auto-register a warranty on a brand's website.
 """
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from services.warranty_service import get_warranties, dispatch_agent
 from db.connect import get_db
+from api.deps import get_current_user_id
 
 router = APIRouter()
 
@@ -24,15 +25,12 @@ class WarrantyRegistrationRequest(BaseModel):
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.get("/", summary="List all warranties for a user")
-async def list_warranties(x_user_id: str = Header(...)):
+async def list_warranties(user_id: str = Depends(get_current_user_id)):
     """
     Returns all warranties with their product names, brands,
     expiry dates, and registration status.
     """
-    if not x_user_id:
-        raise HTTPException(status_code=401, detail="Missing X-User-ID header")
-
-    warranties = await get_warranties(user_id=x_user_id)
+    warranties = await get_warranties(user_id=user_id)
     return {"warranties": warranties}
 
 

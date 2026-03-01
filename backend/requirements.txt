@@ -6,3 +6,6 @@ python-dotenv
 aiofiles
 httpx
 playwright
+PyJWT
+passlib[bcrypt]
+bcrypt
