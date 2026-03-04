@@ -86,7 +86,7 @@ export default function AboutPage({
                             <Image
                                 src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop"
                                 alt="Left big image"
-                                className="rounded-xl object-cover w-full h-[300px] sm:h-[360px] md:h-[100%]"
+                                className="rounded-xl object-cover w-full h-[300px] sm:h-[360px] md:h-full"
                                 width={800}
                                 height={550}
                             />
@@ -112,7 +112,7 @@ export default function AboutPage({
                                         width={600}
                                         height={400}
                                     />
-                                    <div className="absolute bottom-0 h-32 w-full bg-gradient-to-t from-black via-black/70 to-transparent" />
+                                    <div className="absolute bottom-0 h-32 w-full bg-linear-to-t from-black via-black/70 to-transparent" />
                                 </motion.div>
                                 <div className="p-6">
                                     <h3 className="text-xl font-bold">Encrypted Vault</h3>
@@ -141,7 +141,7 @@ export default function AboutPage({
                                     width={600}
                                     height={400}
                                 />
-                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent text-white">
+                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-linear-to-t from-black/70 to-transparent text-white">
                                     <h3 className="text-xl font-bold">Zero-API Architecture</h3>
                                     <p className="mt-2 text-sm text-gray-200">
                                         A completely self-hosted local backend ensures no third party ever analytics or harvests your data.
