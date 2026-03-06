@@ -45,7 +45,7 @@ export default function HomePage() {
   return (
     <main>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <ScrollSequence frameCount={240} />
+      <ScrollSequence frameCount={192} />
 
     </main>
   );

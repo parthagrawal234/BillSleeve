@@ -73,8 +73,12 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
 
     // Set canvas internal resolution based on the first frame
     const firstFrame = framesRef.current[0];
-    canvas.width = firstFrame.width;
-    canvas.height = firstFrame.height;
+    canvas.width = firstFrame.naturalWidth || firstFrame.width;
+    canvas.height = firstFrame.naturalHeight || firstFrame.height;
+
+    // Enable best quality rendering on the canvas
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
     // Draw initial frame
     ctx.drawImage(firstFrame, 0, 0, canvas.width, canvas.height);
@@ -192,12 +196,14 @@ function OverlayContent({ containerRef }: { containerRef: React.RefObject<HTMLDi
     return () => window.removeEventListener("scroll", handleScroll);
   }, [containerRef]);
 
-  // Phase ranges defined per best practices
+  // Phase ranges:
+  // Phases 1-3 have a clear start and end.
+  // Phase 4 persists from 0.72 all the way to the end of the scroll.
   const phases = [
-    { id: 1, start: 0.08, end: 0.24 },
+    { id: 1, start: 0.05, end: 0.24 },
     { id: 2, start: 0.28, end: 0.46 },
     { id: 3, start: 0.50, end: 0.68 },
-    { id: 4, start: 0.72, end: 0.92 },
+    { id: 4, start: 0.72, end: 1.0  }, // No upper cap — persists at end
   ];
 
   const getPhaseClass = (phaseId: number) => {
@@ -212,7 +218,9 @@ function OverlayContent({ containerRef }: { containerRef: React.RefObject<HTMLDi
   };
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-12">
+    <div className="absolute inset-0 flex flex-col items-center justify-center">
+      {/* Gradient to improve text legibility over bright video areas */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1/2 bg-linear-to-b from-transparent via-black/30 to-transparent pointer-events-none" />
       <div className={`absolute w-full px-6 flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${getPhaseClass(1)}`}>
         <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.8)] leading-[1.1] mb-6">
           Zero setup. <br />
