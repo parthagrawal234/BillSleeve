@@ -48,13 +48,13 @@ export default function HomePage() {
       <ScrollSequence frameCount={240} />
 
       {/* ── Features grid ────────────────────────────────────────────── */}
-      <section id="features" className="bg-zinc-950 py-24 px-6">
+      <section id="features" className="bg-black py-32 px-6 border-t border-white/5">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white tracking-tight">
-              Everything you need
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
+              Everything you need.
             </h2>
-            <p className="mt-4 text-zinc-400 text-lg max-w-2xl mx-auto">
+            <p className="mt-6 text-neutral-400 text-xl md:text-2xl max-w-2xl mx-auto font-medium tracking-tight">
               Built for privacy-first users who want total control over their
               financial records and product warranties.
             </p>
@@ -64,15 +64,15 @@ export default function HomePage() {
             {features.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 hover:border-zinc-600 transition-colors duration-200"
+                className="rounded-3xl border border-white/10 bg-neutral-900/40 p-10 hover:bg-neutral-900/60 transition-colors duration-300 backdrop-blur-3xl group"
               >
-                <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-white mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-linear-to-b from-neutral-800 to-neutral-900 border border-white/10 flex items-center justify-center text-white mb-8 shadow-2xl group-hover:scale-105 transition-transform duration-300">
                   {f.icon}
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">
+                <h3 className="text-white font-semibold text-2xl mb-3 tracking-tight">
                   {f.title}
                 </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
+                <p className="text-neutral-400 text-base leading-relaxed">
                   {f.description}
                 </p>
               </div>
@@ -82,26 +82,31 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works ─────────────────────────────────────────────── */}
-      <section className="bg-zinc-900 py-24 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white tracking-tight mb-6">
-            How BillSleeve works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-12">
+      <section className="bg-black py-32 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
+              How it works.
+            </h2>
+            <p className="mt-6 text-neutral-400 text-xl md:text-2xl max-w-3xl mx-auto font-medium tracking-tight">
+               Zero manual entry. Ultimate privacy.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
-              { step: "01", label: "Photograph", desc: "Take a photo of any receipt with the mobile app" },
-              { step: "02", label: "Read", desc: "OpenCV + Tesseract extracts the data in any language" },
+              { step: "01", label: "Photograph", desc: "Take a photo of any receipt with the mobile app." },
+              { step: "02", label: "Read", desc: "OpenCV + Tesseract extracts the data in any language." },
               { step: "03", label: "Store", desc: "Encrypted on your device. Server never sees the original." },
-              { step: "04", label: "Register", desc: "Browser agent auto-registers warranties on brand websites" },
+              { step: "04", label: "Register", desc: "Browser agent auto-registers warranties on brand websites." },
             ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="text-5xl font-bold text-zinc-700 mb-3">
+              <div key={item.step} className="text-left rounded-3xl border border-white/5 bg-neutral-900/20 p-10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 text-7xl font-bold text-white/5 tracking-tighter select-none">
                   {item.step}
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">
+                <h3 className="text-white font-semibold text-2xl mb-4 tracking-tight mt-12 relative z-10">
                   {item.label}
                 </h3>
-                <p className="text-zinc-400 text-sm">{item.desc}</p>
+                <p className="text-neutral-400 text-base leading-relaxed relative z-10">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -109,11 +114,11 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer className="bg-zinc-950 border-t border-zinc-800 py-10 px-6 text-center text-zinc-500 text-sm">
-        <p>
+      <footer className="bg-black border-t border-white/10 py-16 px-6 text-center text-neutral-500 text-sm">
+        <p className="font-medium">
           BillSleeve — Open source, offline-first bill & warranty manager.
         </p>
-        <p className="mt-1">MIT License · Built with FastAPI, OpenCV, Playwright, Next.js</p>
+        <p className="mt-2 text-neutral-600">MIT License · Built with FastAPI, OpenCV, Playwright, Next.js</p>
       </footer>
     </main>
   );

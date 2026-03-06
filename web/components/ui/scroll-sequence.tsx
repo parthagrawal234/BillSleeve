@@ -178,11 +178,9 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
         <div className="absolute inset-0 w-screen h-screen">
           <canvas
             ref={canvasRef}
-            className="absolute top-1/2 left-1/2 w-full h-full object-cover rounded-3xl"
+            className="absolute top-1/2 left-1/2 w-full h-full object-cover"
             style={{
-              transform: "translate(-50%, -50%)",
-              maskImage: "radial-gradient(ellipse 65% 60% at 52% 50%, black 40%, transparent 75%)",
-              WebkitMaskImage: "radial-gradient(ellipse 65% 60% at 52% 50%, black 40%, transparent 75%)"
+              transform: "translate(-50%, -50%)"
             }}
           />
         </div>
