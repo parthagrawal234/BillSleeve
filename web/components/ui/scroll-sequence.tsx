@@ -175,7 +175,7 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
           Using positioning trick to allow the canvas to rotate from its center 
           while remaining centered in the viewport
         */}
-        <div className="absolute top-1/2 left-1/2 w-screen h-screen">
+        <div className="absolute inset-0 w-screen h-screen">
           <canvas
             ref={canvasRef}
             className="absolute top-1/2 left-1/2 w-full h-full object-cover rounded-3xl"
