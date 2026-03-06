@@ -18,7 +18,7 @@ _pool: asyncpg.Pool | None = None
 
 
 async def connect_db():
-    """Open the database connection pool. Called once at startup."""
+    """Open the database connection pool and apply schema migrations. Called once at startup."""
     global _pool
     max_retries = 10
     retry_delay = 2
@@ -39,11 +39,22 @@ async def connect_db():
                     user=os.getenv("DB_USER", "billsleeve"),
                     password=os.getenv("DB_PASSWORD", ""),
                     database=os.getenv("DB_NAME", "billsleeve"),
-                    min_size=5,   # keep 5 connections warm (ready to use)
-                    max_size=20,  # allow up to 20 simultaneous connections
+                    min_size=5,
+                    max_size=20,
                 )
             print("✅ Connected to PostgreSQL")
+
+            # ── Apply schema migrations ───────────────────────────────────────
+            migration_path = os.path.join(
+                os.path.dirname(__file__), "migrations", "001_initial_schema.sql"
+            )
+            with open(migration_path, "r") as f:
+                schema_sql = f.read()
+            async with _pool.acquire() as conn:
+                await conn.execute(schema_sql)
+            print("✅ Schema migrations applied")
             return
+
         except (ConnectionRefusedError, asyncpg.CannotConnectNowError) as e:
             if attempt == max_retries - 1:
                 print(f"❌ Failed to connect to PostgreSQL after {max_retries} attempts")
