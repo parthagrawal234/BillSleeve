@@ -187,39 +187,10 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
 
         {/* Dynamic content overlays based on phases */}
         <div className="absolute inset-0 pointer-events-none">
-           {/* Add a progress bar at the top */}
-           <ScrollProgressBar containerRef={containerRef} />
-           
            <OverlayContent containerRef={containerRef} />
         </div>
       </div>
     </div>
-  );
-}
-
-// Separate component for the thin accent bar at the top
-function ScrollProgressBar({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const scrollableDistance = rect.height - window.innerHeight;
-      let p = -rect.top / scrollableDistance;
-      setProgress(Math.max(0, Math.min(1, p)));
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [containerRef]);
-
-  return (
-    <div 
-      className="absolute top-0 left-0 h-1 bg-linear-to-r from-emerald-400 to-cyan-400 z-50 transition-transform duration-75 origin-left"
-      style={{ width: '100%', transform: `scaleX(${progress})` }}
-    />
   );
 }
 
@@ -262,49 +233,49 @@ function OverlayContent({ containerRef }: { containerRef: React.RefObject<HTMLDi
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-12">
-      <div className={`absolute max-w-lg text-center transition-all duration-700 ease-out backdrop-blur-md bg-black/40 border border-white/10 p-8 rounded-3xl ${getPhaseClass(1)}`}>
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
-          Zero Setup.<br/>
-          <span className="text-emerald-400">Total Automation.</span>
+      <div className={`absolute w-full px-6 flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${getPhaseClass(1)}`}>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.8)] leading-[1.1] mb-6">
+          Zero setup. <br />
+          <span className="text-white/70">Total automation.</span>
         </h2>
-        <p className="text-zinc-300 text-lg drop-shadow">
-          BillSleeve connects directly with your receipt data in seconds—no tedious manual entry required. Let our AI do the heavy lifting.
+        <p className="max-w-xl text-xl md:text-2xl text-white/80 font-medium tracking-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)]">
+          Connects directly with your receipt data in seconds—no manual entry. Let AI do the heavy lifting.
         </p>
       </div>
 
-      <div className={`absolute max-w-lg text-center transition-all duration-700 ease-out backdrop-blur-md bg-black/40 border border-white/10 p-8 rounded-3xl ${getPhaseClass(2)}`}>
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
-          Military-Grade<br/>
-          <span className="text-cyan-400">Encryption.</span>
+      <div className={`absolute w-full px-6 flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${getPhaseClass(2)}`}>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.8)] leading-[1.1] mb-6">
+          Military-grade <br />
+          <span className="text-white/70">encryption.</span>
         </h2>
-        <p className="text-zinc-300 text-lg drop-shadow">
-          Your receipts are encrypted entirely on your device. Only scrambled noise ever hits our servers over the network.
+        <p className="max-w-xl text-xl md:text-2xl text-white/80 font-medium tracking-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)]">
+          Your receipts are encrypted entirely on your device. Only scrambled noise hits our servers.
         </p>
       </div>
 
-      <div className={`absolute max-w-lg text-center transition-all duration-700 ease-out backdrop-blur-md bg-black/40 border border-white/10 p-8 rounded-3xl ${getPhaseClass(3)}`}>
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
-          Sandboxed<br/>
-          <span className="text-purple-400">Browser Agents.</span>
+      <div className={`absolute w-full px-6 flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${getPhaseClass(3)}`}>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.8)] leading-[1.1] mb-6">
+          Sandboxed <br />
+          <span className="text-white/70">agents.</span>
         </h2>
-        <p className="text-zinc-300 text-lg drop-shadow">
-          Register warranties effortlessly using our dedicated browser agents that securely auto-fill complex forms safely inside Docker.
+        <p className="max-w-xl text-xl md:text-2xl text-white/80 font-medium tracking-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)]">
+          Register warranties effortlessly using our dedicated browser agents that securely auto-fill forms inside Docker.
         </p>
       </div>
 
-      <div className={`absolute max-w-lg text-center transition-all duration-700 ease-out backdrop-blur-md bg-black/40 border border-white/10 p-8 rounded-3xl ${getPhaseClass(4)}`}>
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
-          100% Offline.<br/>
-          <span className="text-rose-400">Always Yours.</span>
+      <div className={`absolute w-full px-6 flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${getPhaseClass(4)}`}>
+        <h2 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.8)] leading-[1.1] mb-8">
+          100% offline. <br />
+          <span className="text-white/70">Always yours.</span>
         </h2>
-        <p className="text-zinc-300 text-lg drop-shadow mb-8">
+        <p className="max-w-xl text-xl md:text-2xl text-white/80 font-medium tracking-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.8)] mb-10">
           No mandatory clouds, no costly APIs. The ultimate privacy-first solution for peace of mind.
         </p>
-        <div className="flex items-center justify-center gap-4">
-          <a href="/login" className="px-6 py-3 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 transition-colors pointer-events-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+          <a href="/login" className="px-8 py-4 rounded-full bg-white text-black font-semibold tracking-tight hover:scale-105 transition-transform duration-300 pointer-events-auto">
             Get Started
           </a>
-          <a href="#features" className="px-6 py-3 rounded-full bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors border border-white/20 pointer-events-auto">
+          <a href="#features" className="px-8 py-4 rounded-full bg-transparent text-white font-semibold tracking-tight backdrop-blur-md border border-white/20 hover:bg-white/10 transition-colors duration-300 pointer-events-auto">
             Learn More
           </a>
         </div>

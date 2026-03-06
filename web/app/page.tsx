@@ -64,15 +64,15 @@ export default function HomePage() {
             {features.map((f) => (
               <div
                 key={f.title}
-                className="rounded-3xl border border-white/10 bg-neutral-900/40 p-10 hover:bg-neutral-900/60 transition-colors duration-300 backdrop-blur-3xl group"
+                className="rounded-[32px] border border-white/[0.05] bg-[#0a0a0a] p-10 hover:bg-[#111111] transition-colors duration-500 group"
               >
-                <div className="w-14 h-14 rounded-2xl bg-linear-to-b from-neutral-800 to-neutral-900 border border-white/10 flex items-center justify-center text-white mb-8 shadow-2xl group-hover:scale-105 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-linear-to-b from-neutral-800 to-[#0a0a0a] border border-white/[0.08] flex items-center justify-center text-white mb-8 shadow-2xl">
                   {f.icon}
                 </div>
                 <h3 className="text-white font-semibold text-2xl mb-3 tracking-tight">
                   {f.title}
                 </h3>
-                <p className="text-neutral-400 text-base leading-relaxed">
+                <p className="text-neutral-400 text-base leading-relaxed tracking-tight">
                   {f.description}
                 </p>
               </div>
@@ -99,14 +99,14 @@ export default function HomePage() {
               { step: "03", label: "Store", desc: "Encrypted on your device. Server never sees the original." },
               { step: "04", label: "Register", desc: "Browser agent auto-registers warranties on brand websites." },
             ].map((item) => (
-              <div key={item.step} className="text-left rounded-3xl border border-white/5 bg-neutral-900/20 p-10 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 text-7xl font-bold text-white/5 tracking-tighter select-none">
+              <div key={item.step} className="text-left rounded-[32px] border border-white/[0.05] bg-[#0a0a0a] p-10 relative overflow-hidden group hover:bg-[#111111] transition-colors duration-500">
+                <div className="absolute top-0 right-0 p-8 text-7xl font-bold text-white/[0.02] tracking-tighter select-none transition-colors duration-500 group-hover:text-white/[0.04]">
                   {item.step}
                 </div>
                 <h3 className="text-white font-semibold text-2xl mb-4 tracking-tight mt-12 relative z-10">
                   {item.label}
                 </h3>
-                <p className="text-neutral-400 text-base leading-relaxed relative z-10">{item.desc}</p>
+                <p className="text-neutral-400 text-base leading-relaxed tracking-tight relative z-10">{item.desc}</p>
               </div>
             ))}
           </div>
