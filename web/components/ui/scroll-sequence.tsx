@@ -95,7 +95,7 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
       scrollProgress = Math.max(0, Math.min(1, scrollProgress));
       
       const frameIndex = Math.min(
-        Math.floor(scrollProgress * frameCount),
+        Math.round(scrollProgress * frameCount),
         frameCount - 1
       );
       currentFrameRef.current = frameIndex;
@@ -126,32 +126,12 @@ export function ScrollSequence({ frameCount }: ScrollSequenceProps) {
     };
   }, [loaded, frameCount]);
 
-  // Subtitle rotation mapped to progress for a 3D effect
+  // Remove rotation effect completely. Keep only to clean up old events if somehow still attached.
   useEffect(() => {
-    if (!loaded) return;
-    
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleScrollTransform = () => {
-      const rect = container.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const scrollableDistance = rect.height - windowHeight;
-      let scrollProgress = -rect.top / scrollableDistance;
-      scrollProgress = Math.max(0, Math.min(1, scrollProgress));
-      
-      if (canvasRef.current) {
-        const rotation = -4 + scrollProgress * 12; // Sweeps -4deg to +8deg as per best practices
-        canvasRef.current.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
-      }
-    };
-
-    window.addEventListener("scroll", handleScrollTransform, { passive: true });
-    handleScrollTransform();
-
-    return () => {
-      window.removeEventListener("scroll", handleScrollTransform);
-    };
+    // Just ensure the canvas stays centered with no rotation
+    if (loaded && canvasRef.current) {
+        canvasRef.current.style.transform = `translate(-50%, -50%)`;
+    }
   }, [loaded]);
 
   return (
